@@ -52,7 +52,7 @@
 
 * Aplicação do teste Dickey Fuller e KPSS para verificar se a série é estacionária
 
-**Teste de Dickey Fuller e KPSS**
+### Teste de Dickey Fuller e KPSS
 
 * Para determinar se a série é estacionária, isto é, se a sua média e variância são constantes durante o tempo, foram utilizados os testes de (Augmented) Dickey Fuller e KPSS.
 
