@@ -14,25 +14,23 @@
 
 ## Tratamento inicial
 
-* Remover as linhas duplicadas
-
-* Segmentar do conjunto de dados em medidas por hora ao invés de a cada 10 minutos
+* Inicialmente, foram removidas as linhas duplicadas e o conjunto de dados foi segmentado em medidas por hora ao invés de a cada 10 minutos
 
 ## Análise exploratória
 
-* Criar uma série temporal com a variável a ser prevista 'T(degC)'
-
-* Plotar o histograma da série e a sua variação dos valores ao longo do tempo para verificar se ela é uma distribuição normal e é estacionária
+* Criou-se uma série temporal com a variável a ser prevista 'T(degC)' e foram plotados o histograma da série e a sua variação dos valores ao longo do tempo para verificar o seu comportamento ao longo das observações
 
 ![hist](/images/hist.png)
 
 ![plot](/images/plot.png)
 
-* Analisando preliminarmente, a série aparenta ter distribuição normal e ser estacionária
+* Analisando preliminarmente os gráficos acima, a série aparenta ter distribuição normal e ser estacionária
 
-* Redimensionar a série para a medidas diárias utilizando a média das medidas por hora do dia
+* A série foi redimensionada para medidas diárias utilizando a média das medidas por hora de cada dia com o objetivo de analisar a sazonalidade nas observações
 
 ![plot_daily](/images/plot_daily.png)
+
+* Verifica-se no gráfico acima que a série possui uma tendência de alta seguida por uma tendência de baixa no período de um ano
 
 * Análise da decomposição sazonal da série de medidas diárias (média das medidas por hora)
 
@@ -42,29 +40,29 @@
 
 **Tendência - Trend**
 
-A tendência representa a direção geral da série ao longo de um período de tempo. Dessa forma, observa-se que a série tem uma tendência de alta no período de analisado, mas se encontra na faixa entre 7.5 e 10.0.
+* A tendência representa a direção geral da série ao longo de um período de tempo. Dessa forma, observa-se que a série tem uma tendência de alta no período de analisado, mas se encontra na faixa entre 7.5 e 10.0.
 
 **Sazonalidade - Seasonal**
 
-A sazonalidade retrata um padrão distinto e repetitivo em intervalos de tempo regulares resultante de vários fatores sazonais. Nesse contexto, nota-se que a série possui um padrão de alta seguido por uma baixa no intervalo anual.
+* A sazonalidade retrata um padrão distinto e repetitivo em intervalos de tempo regulares resultante de vários fatores sazonais. Nesse contexto, nota-se que a série possui um padrão de alta seguido por uma baixa no intervalo anual.
 
 **Residual - Resid**
 
-O residual corresponde ao componente irregular presente nas flutuações da série após a remoção dos componentes anteriores.
+* O residual corresponde ao componente irregular presente nas flutuações da série após a remoção dos componentes anteriores.
 
 * Aplicação do teste Dickey Fuller e KPSS para verificar se a série é estacionária
 
 **Teste de Dickey Fuller e KPSS**
 
-Para determinar se a série é estacionária, isto é, se a sua média e variância são constantes durante o tempo, foram utilizados os testes de (Augmented) Dickey Fuller e KPSS.
+* Para determinar se a série é estacionária, isto é, se a sua média e variância são constantes durante o tempo, foram utilizados os testes de (Augmented) Dickey Fuller e KPSS.
 
-O teste **Augmented Dickey-Fuller (ADF)** é conhecido por teste de raiz unitária, a qual é a causa para a não estacionariedade:
+* O teste **Augmented Dickey-Fuller (ADF)** é conhecido por teste de raiz unitária, a qual é a causa para a não estacionariedade:
 
 ```Hipótese nula (H0): A série temporal possui raiz unitária e não é estacionária```
 
 ```Hipótese alternativa (H1): A série temporal não possui raiz unitária e é estacionária```
 
-Foi especificado o nível de significância em 5% e a hipótese nula é rejeitada (série estacionária) se o valor-P < 0.05
+* Foi especificado o nível de significância em 5% e a hipótese nula é rejeitada (série estacionária) se o valor-P < 0.05
 
         Teste Estatistico Dickey Fuller      -3.5847
         Valor-P                               0.0061
@@ -76,13 +74,13 @@ Foi especificado o nível de significância em 5% e a hipótese nula é rejeitad
 
         Resultado: A série temporal é estacionária
 
-O teste **KPSS** objetiva reduzir a incerteza do teste ADF:
+* O teste **KPSS** objetiva reduzir a incerteza do teste ADF:
 
 ```Hipótese nula (H0): A série temporal é estacionária (oposto ao ADF)```
 
 ```Hipótese alternativa (H1): A série temporal não é estacionária```
 
-Foi especificado o nível de significância em 5% e a hipótese alternativa é rejeitada (série estacionária) se o valor-P > 0.05
+* Foi especificado o nível de significância em 5% e a hipótese alternativa é rejeitada (série estacionária) se o valor-P > 0.05
 
         Teste Statistico KPSS       0.2011
         Valor-P                     0.1000
@@ -94,7 +92,7 @@ Foi especificado o nível de significância em 5% e a hipótese alternativa é r
 
         Resultado: A série temporal é estacionária
 
-Os testes estatísticos Dickey Fuller e KPSS indicaram que a série é estacionária, isto é:
+* Os testes estatísticos Dickey Fuller e KPSS indicaram que a série é estacionária, isto é:
 
 ```Dickey Fuller (H1): p_value > 0.05```
 
@@ -137,7 +135,9 @@ Inicialmente, foi desenvolvida uma função para obter o X (input) e o y (output
              .
              .
 
-Como a série foi caracterizada anteriormente como estacionária, não foi necessário escalar os valores da série. Definição dos conjuntos de treino (70%), de validação (20%) e de teste (10%).
+Como a série foi caracterizada anteriormente como estacionária, não foi necessário escalar os valores da série. Segmentação da série em treino, validação e teste com 70%, 20% e 10% de todas as observações, respectivamente
+
+Utilizou-se o modelo sequencial da biblioteca Keras, o qual permite inserir camadas de uma rede neural artificial em série, onde o output da primeira camada serve como input da segunda, e assim por diante. Como mencionado anteriormente, a arquitetura de rede neural utilizada foi a LSTM com 32 neurônios, seguida de uma camada com 8 neurônios utilizando a função de ativação ReLU (linear retificada) e por último a camada de saída.
 
 
         Model: "sequential"
@@ -156,7 +156,7 @@ Como a série foi caracterizada anteriormente como estacionária, não foi neces
         Non-trainable params: 0
         _________________________________________________________________
 
-Hiperparâmetros utilizados no modelo:
+Os hiperparâmetros utilizados no modelo foram os seguintes:
 
 * Perda = Mean Squared Error (MSE)
 
